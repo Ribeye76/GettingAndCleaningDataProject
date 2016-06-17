@@ -1,3 +1,4 @@
+# Call required libraries
 
 library(plyr)
 
@@ -26,7 +27,7 @@ featuresMeanStd.names <- gsub('-mean', 'Mean', featuresMeanStd.names)
 featuresMeanStd.names <- gsub('-std', 'Std', featuresMeanStd.names)
 featuresMeanStd.names <- gsub('[-()]', '', featuresMeanStd.names)
 
-# Load the datasets of train and test, add subjets and activities information,
+# Load datasets train and test, add subjets and activities information
 # filter data with featuresMeanStd, and join them in two datasets: train and test
 
 train <- read.table("UCI HAR Dataset/train/X_train.txt")
@@ -46,10 +47,15 @@ traintest <- rbind(train, test)
 colnames(traintest) <- c("subject", "activity", featuresMeanStd.names)
 
 # turn subjects into factors
-# turn activities into factors and add labels
 traintest$subject <- as.factor(traintest$subject)
+
+# turn activities into factors and add labels
 traintest$activity <- factor(traintest$activity, levels = activitylabels[,1], labels = activitylabels[,2])
 
+# Melt dataset to arrange variables in rows
 traintest.melt <- melt(traintest, id = c("subject", "activity"))
+
+# Summarize table to obtain an independent tidy data set
+# with the average of each variable for each activity and each subject.
 tidy <- ddply(traintest.melt, c("subject", "activity", "variable"), summarise, mean = mean(value))
 write.table(tidy, "tidy.txt", row.names = FALSE, quote = FALSE)
