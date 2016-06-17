@@ -47,3 +47,10 @@ colnames(traintest) <- c("subject", "activity", featuresMeanStd.names)
 # turn activities into factors and add labels
 traintest$subject <- as.factor(traintest$subject)
 traintest$activity <- factor(traintest$activity, levels = activitylabels[,1], labels = activitylabels[,2])
+
+traintest.melt <- melt(traintest, id = c("subject", "activity"))
+write.table(traintest.melt, "tidy.txt", row.names = FALSE, quote = FALSE)
+
+traintest.mean <- dcast(traintest.melt, subject + activity ~ variable, mean)
+
+
