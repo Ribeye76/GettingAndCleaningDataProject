@@ -1,4 +1,6 @@
 
+library(plyr)
+
 # Download and unzip the dataset if it does not already exist
 url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 archivo <- "datos.zip"
@@ -49,8 +51,5 @@ traintest$subject <- as.factor(traintest$subject)
 traintest$activity <- factor(traintest$activity, levels = activitylabels[,1], labels = activitylabels[,2])
 
 traintest.melt <- melt(traintest, id = c("subject", "activity"))
-write.table(traintest.melt, "tidy.txt", row.names = FALSE, quote = FALSE)
-
-traintest.mean <- dcast(traintest.melt, subject + activity ~ variable, mean)
-
-
+tidy <- ddply(traintest.melt, c("subject", "activity", "variable"), summarise, mean = mean(value))
+write.table(tidy, "tidy.txt", row.names = FALSE, quote = FALSE)
